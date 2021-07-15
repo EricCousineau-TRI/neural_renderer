@@ -84,6 +84,18 @@ def make_gif(filename):
     writer.close()
 
 
+def intrinsic_matrix_from_fov(width, height, fov_y):
+    # https://github.com/RobotLocomotion/drake/blob/v0.32.0/systems/sensors/camera_info.cc
+    focal_x = height * 0.5 / np.tan(0.5 * fov_y)
+    focal_y = focal_x
+    pp_x = width / 2 - 0.5  # OpenGL half-pixel
+    pp_y = height / 2 - 0.5
+    return np.array([
+        [focal_x, 0, pp_x],
+        [0, focal_y, pp_y],
+        [0, 0, 1],
+    ])
+
 
 def main():
     preview_image_file = os.path.join(data_dir, 'example_spheres.png')
@@ -103,21 +115,23 @@ def main():
     # load template once.
     template_file = os.path.join(data_dir, 'my_sphere.obj')
     template = Mesh.from_file(template_file)
+    image_size = 128
+    # See:
+    # https://github.com/jenngrannen-TRI/PyFleX/blob/5ea68201b20112debf9613eda464d751153fdff2/bindings/pyflex.cpp#L1235-L1239
 
-    K = np.array([[
-        [10, 0, 0],
-        [0, 10, 0],
-        [0, 0, 1]
-        ]])
+    fov_y = np.pi / 4
+    K = np.array([
+        intrinsic_matrix_from_fov(image_size, image_size, fov_y),
+    ])
     print("K", K)
     # R = np.array([np.eye(3)])
     R = np.array([[
-        [1, 0, 0],
-        [0, 1, 0],
+        [-1, 0, 0],
+        [0, -1, 0],
         [0, 0, 1]
         ]])
     # t = np.zeros((1,1,3))
-    t = np.array([0, 100, 0]).reshape((1,1,3))
+    t = np.array([[1.0, 0, 1.0]])
     # create renderer
     renderer = nr.Renderer(
         camera_mode='projection',
@@ -169,6 +183,8 @@ def main():
             if mode=="rgb":
                 image_save = np.transpose(image_save, (1,2,0))
             imsave("image_test_1.png", image_save)
+            print("saved")
+            exit(0)
 
         # Fake reduction to check gradients.
         # loss = torch.sum((image - image_ref[None, :, :])**2)
