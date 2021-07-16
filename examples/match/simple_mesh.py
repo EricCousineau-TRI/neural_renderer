@@ -21,7 +21,7 @@ class Mesh:
 
     @classmethod
     def from_file(cls, filename):
-        vertices, faces = nr.load_obj(filename, normalization=True)
+        vertices, faces = nr.load_obj(filename, normalization=False)
         return Mesh(
             vertices=vertices,
             faces=faces,
