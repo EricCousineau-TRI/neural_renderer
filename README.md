@@ -56,6 +56,34 @@ From left to right: reference image, initial state, and optimization process.
 
 ![](https://raw.githubusercontent.com/hiroharu-kato/neural_renderer/master/examples/data/example4_ref.png) ![](https://raw.githubusercontent.com/hiroharu-kato/neural_renderer/master/examples/data/example4_init.png) ![](https://raw.githubusercontent.com/hiroharu-kato/neural_renderer/master/examples/data/example4_result.gif)
 
+## Testing
+
+Hacks for my machine
+
+```sh
+cuda-11.2-setup ()
+{
+    export CUDA_ROOT=/usr/local/cuda-11.2;
+    export CUDA_INC_DIR=${CUDA_ROOT}/include;
+    export PATH=${CUDA_ROOT}/bin:${PATH};
+    export LD_LIBRARY_PATH=${CUDA_ROOT}/lib64:${LD_LIBRARY_PATH}
+}
+
+python3 -m venv ./venv
+pip install -U pip wheel
+
+# Build.
+pip install torch==1.7.1+cu110 -f https://download.pytorch.org/whl/torch_stable.html
+cuda-11.2-setup  # Mixing CUDA 11.0 and 11.2, but meh
+pip install -e .
+
+# Install test deps
+pip install scikit-image
+
+# Discover / run tests
+cd ./tests
+python3 -m unittest discover -t .
+```
 
 ## Citation
 
