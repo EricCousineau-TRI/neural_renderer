@@ -79,7 +79,10 @@ class TestRasterize(unittest.TestCase):
         ref = imread(os.path.join(data_dir, 'teapot_blender.png'))
         ref = (ref.min(axis=-1) != 255).astype(np.float32)
 
-        assert(np.allclose(ref, image))
+        imsave("/tmp/teapot_blender_actual.png", image)
+        imsave("/tmp/teapot_blender_ref.png", ref)
+
+        np.testing.assert_allclose(ref, image)
 
     def test_backward_case1(self):
         """Backward if non-zero gradient is out of a face."""
